@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Conservation of Momentum â€” 1D Collisions | PHY3901 EXP 9</title>
+<title>Conservation of Momentum — 1D Collisions | PHY3901 EXP 9</title>
 <style>
   :root {
     --bg: #0f172a;
@@ -180,12 +180,12 @@
 <body>
 
 <header>
-  <h1>ðŸŸ¥ðŸŸ¦ Conservation of Momentum â€” 1D Collisions</h1>
-  <p>PHY3901 Experiment 9 (Virtual Mode) Â· Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
+  <h1>🟥🟦 Conservation of Momentum — 1D Collisions</h1>
+  <p>PHY3901 Experiment 9 (Virtual Mode) · Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
 </header>
 <nav>
-  <a href="index.html">Experiment 1: Egg Drop</a> Â·
-  <a href="momentum.html" class="current">Experiment 2: Conservation of Momentum</a> Â·
+  <a href="index.html">Experiment 1: Egg Drop</a> ·
+  <a href="momentum.html" class="current">Experiment 2: Conservation of Momentum</a> ·
   <a href="pendulum.html">Experiment 3: Ballistic Pendulum</a>
 </nav>
 
@@ -203,11 +203,11 @@
     <div class="box-group box-red">
       <h3>Red box</h3>
       <div class="slider-row">
-        <label>Mass, mâ‚ <b id="m1Val">3.0 kg</b></label>
+        <label>Mass, m₁ <b id="m1Val">3.0 kg</b></label>
         <input type="range" id="m1" min="1" max="10" step="0.5" value="3">
       </div>
       <div class="slider-row">
-        <label>Initial velocity, uâ‚ <b id="u1Val">4.0 m/s</b></label>
+        <label>Initial velocity, u₁ <b id="u1Val">4.0 m/s</b></label>
         <input type="range" id="u1" min="-10" max="10" step="0.5" value="4">
       </div>
     </div>
@@ -215,11 +215,11 @@
     <div class="box-group box-blue">
       <h3>Blue box</h3>
       <div class="slider-row">
-        <label>Mass, mâ‚‚ <b id="m2Val">5.0 kg</b></label>
+        <label>Mass, m₂ <b id="m2Val">5.0 kg</b></label>
         <input type="range" id="m2" min="1" max="10" step="0.5" value="5">
       </div>
       <div class="slider-row">
-        <label>Initial velocity, uâ‚‚ <b id="u2Val">âˆ’3.0 m/s</b></label>
+        <label>Initial velocity, u₂ <b id="u2Val">−3.0 m/s</b></label>
         <input type="range" id="u2" min="-10" max="10" step="0.5" value="-3">
       </div>
     </div>
@@ -235,16 +235,16 @@
     </div>
 
     <div class="actions">
-      <button class="big-btn" id="runBtn">â–¶ Run</button>
-      <button class="big-btn" id="pauseBtn" disabled>âšâš Pause</button>
+      <button class="big-btn" id="runBtn">▶ Run</button>
+      <button class="big-btn" id="pauseBtn" disabled>❚❚ Pause</button>
       <button class="big-btn" id="resetBtn">Reset</button>
     </div>
 
     <div class="formula">
       Momentum: <em>p = mv</em><br>
-      Kinetic energy: <em>KE = Â½mvÂ²</em><br>
-      Conservation: <em>mâ‚uâ‚ + mâ‚‚uâ‚‚ = mâ‚vâ‚ + mâ‚‚vâ‚‚</em><br>
-      (keep the signs: rightward +, leftward âˆ’)
+      Kinetic energy: <em>KE = ½mv²</em><br>
+      Conservation: <em>m₁u₁ + m₂u₂ = m₁v₁ + m₂v₂</em><br>
+      (keep the signs: rightward +, leftward −)
     </div>
   </div>
 
@@ -259,29 +259,29 @@
     <div class="card" style="margin-bottom:14px;">
       <h2>Measured Data</h2>
       <table class="report">
-        <tr><td>Red box: mass mâ‚ / initial uâ‚</td>  <td id="rRedIn">â€“</td></tr>
-        <tr><td>Blue box: mass mâ‚‚ / initial uâ‚‚</td> <td id="rBlueIn">â€“</td></tr>
-        <tr><td>Elasticity, e</td>                  <td id="rE">â€“</td></tr>
-        <tr><td>Red box: final velocity vâ‚</td>     <td id="rV1f">â€“</td></tr>
-        <tr><td>Blue box: final velocity vâ‚‚</td>    <td id="rV2f">â€“</td></tr>
+        <tr><td>Red box: mass m₁ / initial u₁</td>  <td id="rRedIn">–</td></tr>
+        <tr><td>Blue box: mass m₂ / initial u₂</td> <td id="rBlueIn">–</td></tr>
+        <tr><td>Elasticity, e</td>                  <td id="rE">–</td></tr>
+        <tr><td>Red box: final velocity v₁</td>     <td id="rV1f">–</td></tr>
+        <tr><td>Blue box: final velocity v₂</td>    <td id="rV2f">–</td></tr>
       </table>
       <p style="font-size:0.76rem;color:var(--muted);margin-top:10px;">
         The simulation <b>measures velocities only</b>. Calculate p = mv and
-        KE = Â½mvÂ² for each box, before and after the collision, and the totals
-        for Table 2 â€” then verify your totals below.
+        KE = ½mv² for each box, before and after the collision, and the totals
+        for Table 2 — then verify your totals below.
       </p>
     </div>
 
     <div class="card" style="margin-bottom:14px;">
-      <h2>Your Calculation â€” Totals</h2>
+      <h2>Your Calculation — Totals</h2>
       <div class="calc-row">
         <label for="inPb">Total momentum before</label>
-        <input type="number" step="any" id="inPb" placeholder="?" disabled> <span>kgÂ·m/s</span>
+        <input type="number" step="any" id="inPb" placeholder="?" disabled> <span>kg·m/s</span>
         <span class="feedback" id="fbPb"></span>
       </div>
       <div class="calc-row">
         <label for="inPa">Total momentum after</label>
-        <input type="number" step="any" id="inPa" placeholder="?" disabled> <span>kgÂ·m/s</span>
+        <input type="number" step="any" id="inPa" placeholder="?" disabled> <span>kg·m/s</span>
         <span class="feedback" id="fbPa"></span>
       </div>
       <div class="calc-row">
@@ -306,13 +306,13 @@
       <div class="history-wrap">
         <table class="history">
           <thead>
-            <tr><th>#</th><th>e</th><th>mâ‚</th><th>uâ‚</th><th>mâ‚‚</th><th>uâ‚‚</th>
-                <th>vâ‚</th><th>vâ‚‚</th></tr>
+            <tr><th>#</th><th>e</th><th>m₁</th><th>u₁</th><th>m₂</th><th>u₂</th>
+                <th>v₁</th><th>v₂</th></tr>
           </thead>
           <tbody id="histBody"></tbody>
         </table>
       </div>
-      <button class="small-btn" id="csvBtn">â¬‡ Download CSV</button>
+      <button class="small-btn" id="csvBtn">⬇ Download CSV</button>
       <button class="small-btn" id="clearBtn">Clear history</button>
     </div>
   </div>
@@ -341,7 +341,7 @@ let checkedOnce = false;
 let history = [];
 
 /* ---------------- Controls ---------------- */
-const fmt = (x, dp) => (x < 0 ? "âˆ’" : "") + Math.abs(x).toFixed(dp);
+const fmt = (x, dp) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(dp);
 
 function bindSlider(id, key, unit, dp) {
   const el = document.getElementById(id);
@@ -504,7 +504,7 @@ function onCollision() {
   showReport(r);
   addHistory(r);
   resetCalcPanel(false);
-  setStatus("ðŸ’¥ Collision! Final velocities recorded in Measured Data.");
+  setStatus("💥 Collision! Final velocities recorded in Measured Data.");
 }
 
 /* ---------------- Run / Pause / Reset ---------------- */
@@ -514,12 +514,12 @@ document.getElementById("runBtn").addEventListener("click", () => {
     sim.started = true;
     clearReport();
     if (sim.u1 <= sim.u2) {
-      setStatus("âš  With these velocities the boxes will never collide (red must approach blue). Running anywayâ€¦");
+      setStatus("⚠ With these velocities the boxes will never collide (red must approach blue). Running anyway…");
     } else {
-      setStatus("Runningâ€¦");
+      setStatus("Running…");
     }
   } else {
-    setStatus("Runningâ€¦");
+    setStatus("Running…");
   }
   sim.runningAnim = true;
   sim.prev = null;
@@ -549,7 +549,7 @@ function showReport(r) {
 
 function clearReport() {
   ["rRedIn","rBlueIn","rE","rV1f","rV2f"].forEach(id =>
-    document.getElementById(id).textContent = "â€“");
+    document.getElementById(id).textContent = "–");
   resetCalcPanel(true);
 }
 
@@ -578,9 +578,9 @@ function checkValue(inputId, fbId, exact) {
   if (isNaN(val)) { fb.textContent = "enter a value"; fb.className = "feedback fb-bad"; return; }
   const tol = Math.max(TOL_REL * Math.abs(exact), TOL_ABS);
   if (Math.abs(val - exact) <= tol) {
-    fb.textContent = "âœ” correct"; fb.className = "feedback fb-ok";
+    fb.textContent = "✔ correct"; fb.className = "feedback fb-ok";
   } else {
-    fb.textContent = val > exact ? "âœ– too high" : "âœ– too low";
+    fb.textContent = val > exact ? "✖ too high" : "✖ too low";
     fb.className = "feedback fb-bad";
   }
 }
@@ -598,10 +598,10 @@ document.getElementById("checkBtn").addEventListener("click", () => {
 document.getElementById("revealBtn").addEventListener("click", () => {
   if (!lastTrial || !checkedOnce) return;
   document.getElementById("revealOut").textContent =
-    "Î£p before = " + fmt(lastTrial.pBefore, 2) + " kgÂ·m/s\n" +
-    "Î£p after  = " + fmt(lastTrial.pAfter, 2) + " kgÂ·m/s\n" +
-    "Î£KE before = " + fmt(lastTrial.keBefore, 2) + " J\n" +
-    "Î£KE after  = " + fmt(lastTrial.keAfter, 2) + " J";
+    "Σp before = " + fmt(lastTrial.pBefore, 2) + " kg·m/s\n" +
+    "Σp after  = " + fmt(lastTrial.pAfter, 2) + " kg·m/s\n" +
+    "ΣKE before = " + fmt(lastTrial.keBefore, 2) + " J\n" +
+    "ΣKE after  = " + fmt(lastTrial.keAfter, 2) + " J";
 });
 
 /* ---------------- History ---------------- */
