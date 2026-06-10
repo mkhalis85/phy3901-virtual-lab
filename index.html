@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Egg Drop â€” Momentum &amp; Impulsive Force | PHY3901 EXP 9</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel2: #273449;
+    --accent: #f59e0b;
+    --accent2: #38bdf8;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --good: #4ade80;
+    --warn: #facc15;
+    --bad: #f87171;
+    --sel: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  header h1 { font-size: 1.35rem; color: var(--accent); }
+  header p  { font-size: 0.85rem; color: var(--muted); }
+  nav { text-align: center; margin-bottom: 14px; font-size: 0.85rem; }
+  nav a { color: var(--accent2); text-decoration: none; margin: 0 10px; }
+  nav a.current { color: var(--accent); font-weight: 700; }
+  nav a:hover { text-decoration: underline; }
+  .layout {
+    display: grid;
+    grid-template-columns: 290px 420px 1fr;
+    gap: 14px;
+    max-width: 1280px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 1100px) {
+    .layout { grid-template-columns: 1fr 1fr; }
+    .col-canvas { order: -1; grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; }
+  }
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .card h2 {
+    font-size: 0.95rem;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .group { margin-bottom: 14px; }
+  .group > label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .opt {
+    flex: 1 1 auto;
+    background: var(--panel2);
+    border: 2px solid #3b4a63;
+    color: var(--text);
+    border-radius: 8px;
+    padding: 7px 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .opt:hover { border-color: var(--accent2); }
+  .opt.selected {
+    border-color: var(--sel);
+    background: #7f1d1d;
+    color: #fff;
+    font-weight: 700;
+  }
+  .heights { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .actions { display: flex; gap: 8px; margin-top: 4px; }
+  .big-btn {
+    flex: 1;
+    padding: 11px;
+    border: none;
+    border-radius: 9px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #dropBtn { background: var(--accent); color: #1c1917; }
+  #dropBtn:disabled { background: #57534e; color: #a8a29e; cursor: not-allowed; }
+  #resetBtn { background: #475569; color: var(--text); flex: 0 0 auto; padding: 11px 16px; }
+  .col-canvas canvas {
+    background: linear-gradient(#bae6fd 0%, #e0f2fe 60%, #f0f9ff 100%);
+    border-radius: 12px;
+    border: 1px solid #334155;
+    display: block;
+  }
+  table.report {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  table.report td {
+    padding: 6px 4px;
+    border-bottom: 1px solid #334155;
+  }
+  table.report td:last-child { text-align: right; font-family: Consolas, monospace; color: #fff; }
+  .condition {
+    margin-top: 10px;
+    padding: 9px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .cond-intact   { background: #14532d; color: var(--good); }
+  .cond-fracture { background: #713f12; color: var(--warn); }
+  .cond-broken   { background: #7f1d1d; color: var(--bad); }
+  .cond-none     { background: var(--panel2); color: var(--muted); font-weight: 400; font-size: 0.85rem; }
+  .history-wrap { max-height: 300px; overflow-y: auto; margin-top: 8px; }
+  table.history {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.74rem;
+  }
+  table.history th {
+    background: var(--panel2);
+    padding: 5px 4px;
+    text-align: left;
+    position: sticky; top: 0;
+    color: var(--accent2);
+  }
+  table.history td { padding: 4px; border-bottom: 1px solid #2c3a52; font-family: Consolas, monospace; }
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+  }
+  .calc-row label { flex: 0 0 150px; color: var(--muted); }
+  .calc-row input {
+    width: 90px;
+    background: var(--panel2);
+    border: 1px solid #3b4a63;
+    border-radius: 6px;
+    color: #fff;
+    padding: 6px 8px;
+    font-family: Consolas, monospace;
+    font-size: 0.85rem;
+  }
+  .calc-row input:disabled { opacity: 0.45; }
+  .feedback { font-size: 0.95rem; min-width: 70px; }
+  .fb-ok   { color: var(--good); }
+  .fb-bad  { color: var(--bad); }
+  .small-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .small-btn {
+    background: var(--panel2);
+    border: 1px solid #3b4a63;
+    color: var(--text);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .small-btn:hover { border-color: var(--accent2); }
+  .formula {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: var(--panel2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    line-height: 1.6;
+  }
+  .formula em { color: var(--accent); font-style: normal; font-family: "Cambria Math", serif; }
+  .live {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    font-family: Consolas, monospace;
+    color: #1e3a5f;
+    padding: 4px 10px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ðŸ¥š Egg Drop Interactive â€” Momentum, Impulse &amp; Collisions</h1>
+  <p>PHY3901 Experiment 9 (Virtual Mode) Â· Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
+</header>
+<nav>
+  <a href="index.html" class="current">Experiment 1: Egg Drop</a> Â·
+  <a href="momentum.html">Experiment 2: Conservation of Momentum</a> Â·
+  <a href="pendulum.html">Experiment 3: Ballistic Pendulum</a>
+</nav>
+
+<div class="layout">
+
+  <!-- ===== Controls ===== -->
+  <div class="card">
+    <h2>Trial Conditions</h2>
+    <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
+      The selected conditions are highlighted in <span style="color:var(--sel);font-weight:700;">red</span>.
+      Choose egg size, drop height and landing surface, then press <b>Drop Egg</b>.
+    </p>
+
+    <div class="group">
+      <label>Egg size</label>
+      <div class="btn-row" id="eggBtns"></div>
+    </div>
+
+    <div class="group">
+      <label>Drop height (m)</label>
+      <div class="heights" id="heightBtns"></div>
+    </div>
+
+    <div class="group">
+      <label>Landing surface</label>
+      <div class="btn-row" id="surfaceBtns"></div>
+    </div>
+
+    <div class="actions">
+      <button class="big-btn" id="dropBtn">â–¼ Drop Egg</button>
+      <button class="big-btn" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="formula">
+      Impact velocity: <em>v = âˆš(2gh)</em><br>
+      Impulse: <em>J = mÎ”v</em><br>
+      Impulsive force: <em>F = mÎ”v â„ t</em><br>
+      (g = 9.8 m/sÂ² ; egg momentarily stops on landing, so Î”v = v)
+    </div>
+  </div>
+
+  <!-- ===== Canvas ===== -->
+  <div class="col-canvas card" style="padding:8px;">
+    <div class="live"><span id="liveH">h = â€“ m</span></div>
+    <canvas id="scene" width="404" height="600"></canvas>
+  </div>
+
+  <!-- ===== Report & history ===== -->
+  <div>
+    <div class="card" style="margin-bottom:14px;">
+      <h2>Trial Report</h2>
+      <table class="report">
+        <tr><td>Mass of egg, m</td>             <td id="rMass">â€“</td></tr>
+        <tr><td>Drop height, h</td>             <td id="rHeight">â€“</td></tr>
+        <tr><td>Time of impact, t <span style="color:var(--muted);">(sensor)</span></td> <td id="rTime">â€“</td></tr>
+      </table>
+      <div class="condition cond-none" id="rCond">Run a trial to see the egg's final condition.</div>
+      <p style="font-size:0.76rem;color:var(--muted);margin-top:10px;">
+        The simulation only <b>measures</b> m, h and t. Use the equations of motion,
+        impulse and momentum to <b>calculate</b> the impact velocity, Î”v and the
+        impulsive force, then verify your answers below.
+      </p>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <h2>Your Calculation</h2>
+      <div class="calc-row">
+        <label for="inDv">Change in velocity, Î”v</label>
+        <input type="number" step="any" id="inDv" placeholder="?" disabled> <span>m/s</span>
+        <span class="feedback" id="fbDv"></span>
+      </div>
+      <div class="calc-row">
+        <label for="inF">Impulsive force, F</label>
+        <input type="number" step="any" id="inF" placeholder="?" disabled> <span>N</span>
+        <span class="feedback" id="fbF"></span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="small-btn" id="checkBtn" disabled>Check my answers</button>
+        <button class="small-btn" id="revealBtn" disabled title="Available after you have checked your answers">Reveal exact values</button>
+      </div>
+      <div id="revealOut" style="font-size:0.8rem;font-family:Consolas,monospace;color:var(--accent);margin-top:8px;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Trial History (for Table 1)</h2>
+      <div class="history-wrap">
+        <table class="history">
+          <thead>
+            <tr><th>#</th><th>Egg</th><th>h (m)</th><th>Surface</th><th>m (g)</th>
+                <th>t (ms)</th><th>Condition</th></tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+      <button class="small-btn" id="csvBtn">â¬‡ Download CSV</button>
+      <button class="small-btn" id="clearBtn">Clear history</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- Physics model ----------------
+   v  = sqrt(2 g h)              impact speed
+   t  = 2 d / v                  contact time (uniform deceleration over stopping distance d)
+   F  = m v / t = m g h / d      average impulsive force
+   Egg condition thresholds (per egg size): F < F1 intact, F1 <= F < F2 fractured, F >= F2 broken. */
+
+const G = 9.8;
+
+const EGGS = {
+  small: { label: "Small", mass: 0.045, F1: 60,  F2: 170, rx: 11, ry: 14 },
+  large: { label: "Large", mass: 0.057, F1: 75,  F2: 220, rx: 13, ry: 17 },
+  jumbo: { label: "Jumbo", mass: 0.070, F1: 90,  F2: 280, rx: 15, ry: 20 }
+};
+
+const SURFACES = {
+  hard: { label: "Hard floor",  d: 0.001,  color: "#6b7280", thick: 10 },
+  foam: { label: "1-inch foam", d: 0.0127, color: "#60a5fa", thick: 16 },
+  box:  { label: "Foam box",    d: 0.100,  color: "#a78bfa", thick: 58 }
+};
+
+const HEIGHTS = [1,2,3,4,5,6,7,8,9,10];
+
+let sel = { egg: "small", height: 1, surface: "hard" };
+let running = false;
+let history = [];
+
+/* ---------------- Controls ---------------- */
+function makeButtons(containerId, items, key, fmt) {
+  const c = document.getElementById(containerId);
+  items.forEach(it => {
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = fmt(it);
+    b.dataset.value = it;
+    b.addEventListener("click", () => {
+      if (running) return;
+      sel[key] = (key === "height") ? Number(it) : it;
+      refreshButtons();
+      drawScene(sel.height, null);
+    });
+    c.appendChild(b);
+  });
+}
+function refreshButtons() {
+  document.querySelectorAll("#eggBtns .opt").forEach(b =>
+    b.classList.toggle("selected", b.dataset.value === sel.egg));
+  document.querySelectorAll("#heightBtns .opt").forEach(b =>
+    b.classList.toggle("selected", Number(b.dataset.value) === sel.height));
+  document.querySelectorAll("#surfaceBtns .opt").forEach(b =>
+    b.classList.toggle("selected", b.dataset.value === sel.surface));
+}
+makeButtons("eggBtns", Object.keys(EGGS), "egg", k => EGGS[k].label);
+makeButtons("heightBtns", HEIGHTS, "height", h => h);
+makeButtons("surfaceBtns", Object.keys(SURFACES), "surface", k => SURFACES[k].label);
+refreshButtons();
+
+/* ---------------- Canvas drawing ---------------- */
+const cv = document.getElementById("scene");
+const cx = cv.getContext("2d");
+const W = cv.width, H = cv.height;
+const GROUND_Y = H - 70;          // top of the floor slab
+const PX_PER_M = (GROUND_Y - 60) / 10.5;
+
+function surfaceTopY() { return GROUND_Y - SURFACES[sel.surface].thick; }
+
+function drawBackdrop() {
+  cx.clearRect(0, 0, W, H);
+  // height ruler
+  cx.strokeStyle = "#64748b"; cx.fillStyle = "#475569";
+  cx.font = "11px Consolas, monospace"; cx.lineWidth = 1;
+  const sTop = surfaceTopY();
+  for (let m = 0; m <= 10; m++) {
+    const y = sTop - m * PX_PER_M;
+    cx.beginPath(); cx.moveTo(34, y); cx.lineTo(m % 5 === 0 ? 50 : 44, y); cx.stroke();
+    if (m % 1 === 0) cx.fillText(m + " m", 2, y + 4);
+  }
+  cx.beginPath(); cx.moveTo(34, sTop); cx.lineTo(34, sTop - 10 * PX_PER_M); cx.stroke();
+
+  // ground
+  cx.fillStyle = "#92400e";
+  cx.fillRect(0, GROUND_Y, W, H - GROUND_Y);
+  cx.fillStyle = "#78350f";
+  for (let x = 0; x < W; x += 22) cx.fillRect(x, GROUND_Y, 11, H - GROUND_Y);
+
+  // landing surface
+  const s = SURFACES[sel.surface];
+  cx.fillStyle = s.color;
+  if (sel.surface === "box") {
+    cx.fillStyle = "#c4b5fd";
+    cx.fillRect(W/2 - 55, GROUND_Y - s.thick, 110, s.thick);
+    cx.fillStyle = "#7c3aed";
+    cx.fillRect(W/2 - 62, GROUND_Y - s.thick, 7, s.thick);   // box walls
+    cx.fillRect(W/2 + 55, GROUND_Y - s.thick, 7, s.thick);
+    cx.fillRect(W/2 - 62, GROUND_Y - 6, 124, 6);
+  } else {
+    cx.fillRect(W/2 - 70, GROUND_Y - s.thick, 140, s.thick);
+    if (sel.surface === "foam") {
+      cx.fillStyle = "#3b82f6";
+      for (let x = W/2 - 65; x < W/2 + 65; x += 12) cx.fillRect(x, GROUND_Y - s.thick, 5, 3);
+    }
+  }
+  cx.fillStyle = "#334155"; cx.font = "12px Segoe UI";
+  cx.textAlign = "center";
+  cx.fillText(s.label, W/2, GROUND_Y + 28);
+  cx.textAlign = "left";
+}
+
+function drawEgg(yBottom, state, squash) {
+  const e = EGGS[sel.egg];
+  const rx = e.rx * (1 + (squash || 0) * 0.5);
+  const ry = e.ry * (1 - (squash || 0) * 0.45);
+  const x = W/2, y = yBottom - ry;
+
+  if (state === "broken") {
+    // splat
+    cx.fillStyle = "#fef3c7";
+    cx.beginPath(); cx.ellipse(x, yBottom - 4, e.rx * 2.6, 7, 0, 0, Math.PI * 2); cx.fill();
+    cx.fillStyle = "#fbbf24";
+    cx.beginPath(); cx.ellipse(x, yBottom - 5, e.rx * 0.9, 5, 0, 0, Math.PI * 2); cx.fill();
+    cx.fillStyle = "#fffbeb";  // shell pieces
+    [[-1.8,-3],[1.5,-2],[-0.6,-6],[0.9,-7],[2.3,-4]].forEach(p => {
+      cx.beginPath();
+      cx.arc(x + p[0] * e.rx * 0.8, yBottom + p[1], 3.2, 0.3, Math.PI + 0.7);
+      cx.fill();
+    });
+    return;
+  }
+  // shell
+  const grad = cx.createRadialGradient(x - rx/3, y - ry/3, 2, x, y, ry * 1.3);
+  grad.addColorStop(0, "#fffbeb");
+  grad.addColorStop(1, "#fcd34d");
+  cx.fillStyle = grad;
+  cx.beginPath(); cx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); cx.fill();
+  cx.strokeStyle = "#d97706"; cx.lineWidth = 1.2; cx.stroke();
+
+  if (state === "fractured") {
+    cx.strokeStyle = "#92400e"; cx.lineWidth = 1.3;
+    cx.beginPath();
+    cx.moveTo(x - rx * 0.6, y + ry * 0.5);
+    cx.lineTo(x - rx * 0.2, y + ry * 0.1);
+    cx.lineTo(x + rx * 0.25, y + ry * 0.45);
+    cx.lineTo(x + rx * 0.6, y);
+    cx.stroke();
+    cx.beginPath();
+    cx.moveTo(x - rx * 0.2, y + ry * 0.1);
+    cx.lineTo(x - rx * 0.1, y - ry * 0.4);
+    cx.stroke();
+  }
+}
+
+function drawScene(eggHeightM, state, squash) {
+  drawBackdrop();
+  if (eggHeightM !== null) {
+    drawEgg(surfaceTopY() - eggHeightM * PX_PER_M, state, squash);
+  }
+}
+
+/* ---------------- Trial run ---------------- */
+const fmt = (x, dp) => x.toLocaleString("en-US", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+
+function computeTrial() {
+  const e = EGGS[sel.egg], s = SURFACES[sel.surface], h = sel.height;
+  const v = Math.sqrt(2 * G * h);
+  const t = 2 * s.d / v;
+  const F = e.mass * v / t;
+  const J = e.mass * v;
+  const condition = F < e.F1 ? "intact" : (F < e.F2 ? "fractured" : "broken");
+  return { mass: e.mass, h, v, dv: v, t, F, J, condition };
+}
+
+function showReport(r) {
+  document.getElementById("rMass").textContent   = (r.mass * 1000).toFixed(0) + " g  (" + r.mass.toFixed(3) + " kg)";
+  document.getElementById("rHeight").textContent = r.h + " m";
+  document.getElementById("rTime").textContent   = fmt(r.t * 1000, 2) + " ms";
+
+  const cond = document.getElementById("rCond");
+  if (r.condition === "intact") {
+    cond.className = "condition cond-intact";
+    cond.textContent = "âœ… Egg is INTACT â€” safe landing!";
+  } else if (r.condition === "fractured") {
+    cond.className = "condition cond-fracture";
+    cond.textContent = "âš ï¸ Egg is FRACTURED (cracked, but not broken)";
+  } else {
+    cond.className = "condition cond-broken";
+    cond.textContent = "ðŸ’¥ Egg is BROKEN ENTIRELY!";
+  }
+}
+
+function clearReport() {
+  ["rMass","rHeight","rTime"].forEach(id =>
+    document.getElementById(id).textContent = "â€“");
+  const cond = document.getElementById("rCond");
+  cond.className = "condition cond-none";
+  cond.textContent = "Run a trial to see the egg's final condition.";
+  resetCalcPanel(true);
+}
+
+/* ---------------- Student calculation check ---------------- */
+let lastTrial = null;
+let checkedOnce = false;
+const TOL = 0.03;   // 3% tolerance (covers rounding and g = 9.8 vs 9.81)
+
+function resetCalcPanel(disable) {
+  ["inDv","inF"].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = "";
+    el.disabled = disable;
+  });
+  ["fbDv","fbF"].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = "";
+    el.className = "feedback";
+  });
+  document.getElementById("checkBtn").disabled = disable;
+  document.getElementById("revealBtn").disabled = true;
+  document.getElementById("revealOut").textContent = "";
+  checkedOnce = false;
+}
+
+function checkValue(inputId, fbId, exact) {
+  const el = document.getElementById(inputId);
+  const fb = document.getElementById(fbId);
+  const val = parseFloat(el.value);
+  if (isNaN(val)) {
+    fb.textContent = "enter a value";
+    fb.className = "feedback fb-bad";
+    return;
+  }
+  const err = (val - exact) / exact;
+  if (Math.abs(err) <= TOL) {
+    fb.textContent = "âœ” correct";
+    fb.className = "feedback fb-ok";
+  } else {
+    fb.textContent = err > 0 ? "âœ– too high" : "âœ– too low";
+    fb.className = "feedback fb-bad";
+  }
+}
+
+document.getElementById("checkBtn").addEventListener("click", () => {
+  if (!lastTrial) return;
+  checkValue("inDv", "fbDv", lastTrial.dv);
+  checkValue("inF",  "fbF",  lastTrial.F);
+  checkedOnce = true;
+  document.getElementById("revealBtn").disabled = false;
+});
+
+document.getElementById("revealBtn").addEventListener("click", () => {
+  if (!lastTrial || !checkedOnce) return;
+  document.getElementById("revealOut").textContent =
+    "Î”v = " + fmt(lastTrial.dv, 2) + " m/s   F = " + fmt(lastTrial.F, 1) + " N";
+});
+
+function addHistory(r) {
+  history.push(r);
+  const tr = document.createElement("tr");
+  tr.innerHTML =
+    `<td>${history.length}</td><td>${EGGS[sel.egg].label}</td><td>${r.h}</td>` +
+    `<td>${SURFACES[sel.surface].label}</td><td>${(r.mass*1000).toFixed(0)}</td>` +
+    `<td>${fmt(r.t*1000,2)}</td><td>${r.condition}</td>`;
+  document.getElementById("histBody").appendChild(tr);
+  r.eggLabel = EGGS[sel.egg].label;
+  r.surfLabel = SURFACES[sel.surface].label;
+}
+
+function runTrial() {
+  if (running) return;
+  running = true;
+  document.getElementById("dropBtn").disabled = true;
+  clearReport();
+
+  const r = computeTrial();
+  const h0 = sel.height;
+  const fallTime = Math.sqrt(2 * h0 / G);   // real-time fall
+  const t0 = performance.now();
+
+  function fall(now) {
+    const t = (now - t0) / 1000;
+    let hNow = h0 - 0.5 * G * t * t;
+    if (hNow <= 0) { impact(); return; }
+    drawScene(hNow, null);
+    document.getElementById("liveH").textContent = "h = " + fmt(hNow, 2) + " m";
+    requestAnimationFrame(fall);
+  }
+
+  function impact() {
+    document.getElementById("liveH").textContent = "h = 0.00 m";
+    // brief squash animation (slow-motion), then final state
+    const tI = performance.now(), dur = 350;
+    function squashAnim(now) {
+      const p = Math.min((now - tI) / dur, 1);
+      const squash = Math.sin(p * Math.PI) * (r.condition === "intact" ? 0.25 : 0.45);
+      drawScene(0, p < 1 ? null : r.condition, squash);
+      if (p < 1) { requestAnimationFrame(squashAnim); }
+      else { finish(); }
+    }
+    requestAnimationFrame(squashAnim);
+  }
+
+  function finish() {
+    drawScene(0, r.condition, 0);
+    showReport(r);
+    addHistory(r);
+    lastTrial = r;
+    resetCalcPanel(false);
+    running = false;
+    document.getElementById("dropBtn").disabled = false;
+  }
+
+  requestAnimationFrame(fall);
+}
+
+document.getElementById("dropBtn").addEventListener("click", runTrial);
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (running) return;
+  clearReport();
+  drawScene(sel.height, null);
+  document.getElementById("liveH").textContent = "h = â€“ m";
+});
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  history = [];
+  document.getElementById("histBody").innerHTML = "";
+});
+
+document.getElementById("csvBtn").addEventListener("click", () => {
+  if (!history.length) return;
+  let csv = "Trial,Egg size,Drop height (m),Surface,Mass (g),Time of impact (ms),Final condition,Change in velocity (m/s) - calculate,Impulsive force (N) - calculate\n";
+  history.forEach((r, i) => {
+    csv += [i+1, r.eggLabel, r.h, r.surfLabel, (r.mass*1000).toFixed(0),
+            (r.t*1000).toFixed(2), r.condition, "", ""].join(",") + "\n";
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = "egg_drop_data.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+drawScene(sel.height, null);
+</script>
+</body>
+</html>
