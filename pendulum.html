@@ -170,12 +170,12 @@
 <body>
 
 <header>
-  <h1>ðŸ”«ðŸªµ Ballistic Pendulum</h1>
-  <p>PHY3901 Experiment 9 (Virtual Mode) Â· Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
+  <h1>🔫🪵 Ballistic Pendulum</h1>
+  <p>PHY3901 Experiment 9 (Virtual Mode) · Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
 </header>
 <nav>
-  <a href="index.html">Experiment 1: Egg Drop</a> Â·
-  <a href="momentum.html">Experiment 2: Conservation of Momentum</a> Â·
+  <a href="index.html">Experiment 1: Egg Drop</a> ·
+  <a href="momentum.html">Experiment 2: Conservation of Momentum</a> ·
   <a href="pendulum.html" class="current">Experiment 3: Ballistic Pendulum</a>
 </nav>
 
@@ -187,7 +187,7 @@
     <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
       A bullet is fired into a stationary wooden block hanging as a pendulum.
       The bullet embeds in the block (perfectly inelastic), and the system
-      swings upward. The bullet's initial velocity is <b>unknown</b> â€” your task
+      swings upward. The bullet's initial velocity is <b>unknown</b> — your task
       is to determine it.
     </p>
 
@@ -205,15 +205,15 @@
     </div>
 
     <div class="actions">
-      <button class="big-btn" id="fireBtn">âš¡ Fire</button>
+      <button class="big-btn" id="fireBtn">⚡ Fire</button>
       <button class="big-btn" id="resetBtn">Reset</button>
     </div>
 
     <div class="formula">
       Collision (momentum): <em>mu = (m + M)v</em><br>
-      Swing (energy): <em>Â½(m + M)vÂ² = (m + M)gh</em><br>
-      so <em>v = âˆš(2gh)</em> and <em>u = (m + M)v â„ m</em><br>
-      (g = 9.8 m/sÂ² ; pendulum length L = 1.8 m)
+      Swing (energy): <em>½(m + M)v² = (m + M)gh</em><br>
+      so <em>v = √(2gh)</em> and <em>u = (m + M)v ⁄ m</em><br>
+      (g = 9.8 m/s² ; pendulum length L = 1.8 m)
     </div>
   </div>
 
@@ -226,7 +226,7 @@
       <b id="refVal">h = 0.0 cm</b>
     </div>
     <div class="slowmo">
-      <label><input type="checkbox" id="slowmo"> slow motion (Ã—Â¼)</label>
+      <label><input type="checkbox" id="slowmo"> slow motion (×¼)</label>
     </div>
     <div class="status" id="status">Set the masses and the (unknown) bullet velocity, set the reference line to the bottom of the block (h = 0), then press Fire.</div>
   </div>
@@ -236,14 +236,14 @@
     <div class="card" style="margin-bottom:14px;">
       <h2>Measured Data</h2>
       <table class="report">
-        <tr><td>Mass of bullet, m</td>        <td id="rMb">â€“</td></tr>
-        <tr><td>Mass of wood block, M</td>    <td id="rMB">â€“</td></tr>
+        <tr><td>Mass of bullet, m</td>        <td id="rMb">–</td></tr>
+        <tr><td>Mass of wood block, M</td>    <td id="rMB">–</td></tr>
         <tr><td>Initial velocity of bullet, u</td> <td id="rU" style="color:var(--sel);">???</td></tr>
         <tr><td>Reference line height</td>    <td id="rRef">0.0 cm</td></tr>
       </table>
       <p style="font-size:0.76rem;color:var(--muted);margin-top:10px;">
         Fire, then move the <b style="color:var(--sel);">red reference line</b> up
-        until it touches the <b>lowest edge of the block at the top of its swing</b> â€”
+        until it touches the <b>lowest edge of the block at the top of its swing</b> —
         that reading is your maximum height h. Use conservation of momentum and
         energy to estimate u, then check it below.
       </p>
@@ -276,7 +276,7 @@
           <tbody id="histBody"></tbody>
         </table>
       </div>
-      <button class="small-btn" id="csvBtn">â¬‡ Download CSV</button>
+      <button class="small-btn" id="csvBtn">⬇ Download CSV</button>
       <button class="small-btn" id="clearBtn">Clear history</button>
     </div>
   </div>
@@ -286,10 +286,10 @@
 "use strict";
 
 /* ---------------- Physics ----------------
-   Perfectly inelastic collision:  mÂ·u = (m+M)Â·v
-   Swing (energy conservation):    Â½(m+M)vÂ² = (m+M)gh  â†’  h = vÂ²/(2g)
-   True max rise of the block:     h = (mÂ·u/(m+M))Â² / (2g)
-   The swing is animated as Î¸(t) = Î¸maxÂ·sin(2Ï€t/T) with h = L(1âˆ’cosÎ¸max). */
+   Perfectly inelastic collision:  m·u = (m+M)·v
+   Swing (energy conservation):    ½(m+M)v² = (m+M)gh  →  h = v²/(2g)
+   True max rise of the block:     h = (m·u/(m+M))² / (2g)
+   The swing is animated as θ(t) = θmax·sin(2πt/T) with h = L(1−cosθmax). */
 
 const G = 9.8;
 const L = 1.8;                       // m, pivot to block centre
@@ -313,7 +313,7 @@ let history = [];
 let rafId = null;
 
 /* ---------------- Controls ---------------- */
-const fmt = (x, dp) => (x < 0 ? "âˆ’" : "") + Math.abs(x).toFixed(dp);
+const fmt = (x, dp) => (x < 0 ? "−" : "") + Math.abs(x).toFixed(dp);
 
 function bindSlider(id, fn) {
   const el = document.getElementById(id);
@@ -430,7 +430,7 @@ function loop(now) {
     if (bulletX >= PIVOT.x - side / 2) {
       state = "swing";
       swingT0 = null;
-      setStatus("ðŸ’¥ The bullet embedded in the block â€” it is swinging. Move the reference line to the highest point of the block's bottom edge.");
+      setStatus("💥 The bullet embedded in the block — it is swinging. Move the reference line to the highest point of the block's bottom edge.");
     }
     draw(0, bulletX);
   } else if (state === "swing") {
@@ -450,8 +450,8 @@ document.getElementById("fireBtn").addEventListener("click", () => {
   const { mb, Mb, u } = params;
   const v = mb * u / (mb + Mb);
   const h = v * v / (2 * G);
-  if (h > L * (1 - Math.cos(Math.PI / 3))) {   // beyond 60Â° swing
-    setStatus("âš  With these settings the block would swing too high to measure. Reduce the bullet velocity or bullet mass, or increase the block mass.");
+  if (h > L * (1 - Math.cos(Math.PI / 3))) {   // beyond 60° swing
+    setStatus("⚠ With these settings the block would swing too high to measure. Reduce the bullet velocity or bullet mass, or increase the block mass.");
     return;
   }
   trial = { mb, Mb, u, v, h, uExact: u };
@@ -465,7 +465,7 @@ document.getElementById("fireBtn").addEventListener("click", () => {
   resetCalcPanel(false);
   ["mb", "Mb", "u0"].forEach(id => document.getElementById(id).disabled = true);
   document.getElementById("fireBtn").disabled = true;
-  setStatus("Firingâ€¦");
+  setStatus("Firing…");
   rafId = requestAnimationFrame(loop);
 });
 
@@ -490,8 +490,8 @@ function showReport() {
 }
 
 function clearReport() {
-  document.getElementById("rMb").textContent = "â€“";
-  document.getElementById("rMB").textContent = "â€“";
+  document.getElementById("rMb").textContent = "–";
+  document.getElementById("rMB").textContent = "–";
   document.getElementById("rU").textContent = "???";
 }
 
@@ -515,9 +515,9 @@ document.getElementById("checkBtn").addEventListener("click", () => {
   if (isNaN(val)) { fb.textContent = "enter a value"; fb.className = "feedback fb-bad"; return; }
   const err = (val - trial.uExact) / trial.uExact;
   if (Math.abs(err) <= 0.05) {
-    fb.textContent = "âœ” close enough"; fb.className = "feedback fb-ok";
+    fb.textContent = "✔ close enough"; fb.className = "feedback fb-ok";
   } else {
-    fb.textContent = err > 0 ? "âœ– too high" : "âœ– too low";
+    fb.textContent = err > 0 ? "✖ too high" : "✖ too low";
     fb.className = "feedback fb-bad";
   }
   checkedOnce = true;
