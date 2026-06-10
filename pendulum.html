@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ballistic Pendulum | PHY3901 EXP 9</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel2: #273449;
+    --accent: #f59e0b;
+    --accent2: #38bdf8;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --good: #4ade80;
+    --warn: #facc15;
+    --bad: #f87171;
+    --sel: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 16px;
+  }
+  header { text-align: center; margin-bottom: 6px; }
+  header h1 { font-size: 1.35rem; color: var(--accent); }
+  header p  { font-size: 0.85rem; color: var(--muted); }
+  nav { text-align: center; margin-bottom: 14px; font-size: 0.85rem; }
+  nav a { color: var(--accent2); text-decoration: none; margin: 0 10px; }
+  nav a.current { color: var(--accent); font-weight: 700; }
+  nav a:hover { text-decoration: underline; }
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr 380px;
+    gap: 14px;
+    max-width: 1380px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  @media (max-width: 1150px) {
+    .layout { grid-template-columns: 1fr 1fr; }
+    .col-canvas { order: -1; grid-column: 1 / -1; }
+  }
+  @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .card h2 {
+    font-size: 0.95rem;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .slider-row { margin-bottom: 12px; }
+  .slider-row label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .slider-row label b { color: #fff; font-family: Consolas, monospace; }
+  .slider-row input[type=range] { width: 100%; accent-color: var(--accent); }
+  .slider-row input[type=range]:disabled { opacity: 0.45; }
+  .actions { display: flex; gap: 8px; margin-top: 10px; }
+  .big-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #fireBtn  { background: var(--accent); color: #1c1917; }
+  #resetBtn { background: #475569; color: var(--text); }
+  .big-btn:disabled { background: #57534e; color: #a8a29e; cursor: not-allowed; }
+  .col-canvas canvas {
+    background: linear-gradient(#bae6fd 0%, #e0f2fe 70%, #f0f9ff 100%);
+    border-radius: 12px;
+    border: 1px solid #334155;
+    display: block;
+    width: 100%;
+  }
+  .status {
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 6px 4px;
+    text-align: center;
+    min-height: 28px;
+  }
+  .refline-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 6px;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .refline-row input[type=range] { flex: 1; accent-color: #ef4444; }
+  .refline-row b { color: #fff; font-family: Consolas, monospace; min-width: 86px; text-align: right; }
+  .slowmo { font-size: 0.75rem; color: var(--muted); padding: 0 6px 4px; text-align: right; }
+  table.report { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  table.report td { padding: 5px 4px; border-bottom: 1px solid #334155; }
+  table.report td:last-child { text-align: right; font-family: Consolas, monospace; color: #fff; }
+  .calc-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+  }
+  .calc-row label { flex: 0 0 165px; color: var(--muted); }
+  .calc-row input {
+    width: 85px;
+    background: var(--panel2);
+    border: 1px solid #3b4a63;
+    border-radius: 6px;
+    color: #fff;
+    padding: 6px 8px;
+    font-family: Consolas, monospace;
+    font-size: 0.85rem;
+  }
+  .calc-row input:disabled { opacity: 0.45; }
+  .feedback { font-size: 0.92rem; min-width: 64px; }
+  .fb-ok  { color: var(--good); }
+  .fb-bad { color: var(--bad); }
+  .small-btn {
+    background: var(--panel2);
+    border: 1px solid #3b4a63;
+    color: var(--text);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .small-btn:hover { border-color: var(--accent2); }
+  .small-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .history-wrap { max-height: 220px; overflow-y: auto; margin-top: 8px; }
+  table.history { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+  table.history th {
+    background: var(--panel2);
+    padding: 5px 3px;
+    text-align: left;
+    position: sticky; top: 0;
+    color: var(--accent2);
+  }
+  table.history td { padding: 4px 3px; border-bottom: 1px solid #2c3a52; font-family: Consolas, monospace; }
+  .formula {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: var(--panel2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    line-height: 1.7;
+  }
+  .formula em { color: var(--accent); font-style: normal; font-family: "Cambria Math", serif; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ðŸ”«ðŸªµ Ballistic Pendulum</h1>
+  <p>PHY3901 Experiment 9 (Virtual Mode) Â· Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
+</header>
+<nav>
+  <a href="index.html">Experiment 1: Egg Drop</a> Â·
+  <a href="momentum.html">Experiment 2: Conservation of Momentum</a> Â·
+  <a href="pendulum.html" class="current">Experiment 3: Ballistic Pendulum</a>
+</nav>
+
+<div class="layout">
+
+  <!-- ===== Controls ===== -->
+  <div class="card">
+    <h2>Setup</h2>
+    <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;">
+      A bullet is fired into a stationary wooden block hanging as a pendulum.
+      The bullet embeds in the block (perfectly inelastic), and the system
+      swings upward. The bullet's initial velocity is <b>unknown</b> â€” your task
+      is to determine it.
+    </p>
+
+    <div class="slider-row">
+      <label>Mass of bullet, m <b id="mbVal">15 g</b></label>
+      <input type="range" id="mb" min="5" max="30" step="1" value="15">
+    </div>
+    <div class="slider-row">
+      <label>Mass of wood block, M <b id="MbVal">2.5 kg</b></label>
+      <input type="range" id="Mb" min="1" max="5" step="0.1" value="2.5">
+    </div>
+    <div class="slider-row">
+      <label>Initial velocity of bullet, u <b style="color:var(--sel);">??? (unknown)</b></label>
+      <input type="range" id="u0" min="50" max="300" step="5" value="150">
+    </div>
+
+    <div class="actions">
+      <button class="big-btn" id="fireBtn">âš¡ Fire</button>
+      <button class="big-btn" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="formula">
+      Collision (momentum): <em>mu = (m + M)v</em><br>
+      Swing (energy): <em>Â½(m + M)vÂ² = (m + M)gh</em><br>
+      so <em>v = âˆš(2gh)</em> and <em>u = (m + M)v â„ m</em><br>
+      (g = 9.8 m/sÂ² ; pendulum length L = 1.8 m)
+    </div>
+  </div>
+
+  <!-- ===== Canvas ===== -->
+  <div class="col-canvas card" style="padding:8px;">
+    <canvas id="scene" width="560" height="500"></canvas>
+    <div class="refline-row">
+      <span>Reference line:</span>
+      <input type="range" id="refLine" min="0" max="120" step="0.1" value="0">
+      <b id="refVal">h = 0.0 cm</b>
+    </div>
+    <div class="slowmo">
+      <label><input type="checkbox" id="slowmo"> slow motion (Ã—Â¼)</label>
+    </div>
+    <div class="status" id="status">Set the masses and the (unknown) bullet velocity, set the reference line to the bottom of the block (h = 0), then press Fire.</div>
+  </div>
+
+  <!-- ===== Report, calculation, history ===== -->
+  <div>
+    <div class="card" style="margin-bottom:14px;">
+      <h2>Measured Data</h2>
+      <table class="report">
+        <tr><td>Mass of bullet, m</td>        <td id="rMb">â€“</td></tr>
+        <tr><td>Mass of wood block, M</td>    <td id="rMB">â€“</td></tr>
+        <tr><td>Initial velocity of bullet, u</td> <td id="rU" style="color:var(--sel);">???</td></tr>
+        <tr><td>Reference line height</td>    <td id="rRef">0.0 cm</td></tr>
+      </table>
+      <p style="font-size:0.76rem;color:var(--muted);margin-top:10px;">
+        Fire, then move the <b style="color:var(--sel);">red reference line</b> up
+        until it touches the <b>lowest edge of the block at the top of its swing</b> â€”
+        that reading is your maximum height h. Use conservation of momentum and
+        energy to estimate u, then check it below.
+      </p>
+    </div>
+
+    <div class="card" style="margin-bottom:14px;">
+      <h2>Your Calculation</h2>
+      <div class="calc-row">
+        <label for="inU">Estimated bullet velocity, u</label>
+        <input type="number" step="any" id="inU" placeholder="?" disabled> <span>m/s</span>
+        <span class="feedback" id="fbU"></span>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;">
+        <button class="small-btn" id="checkBtn" disabled>Check my answer</button>
+        <label style="font-size:0.78rem;color:var(--muted);">
+          <input type="checkbox" id="showU" disabled> Show initial bullet velocity
+        </label>
+      </div>
+      <div id="revealOut" style="font-size:0.78rem;font-family:Consolas,monospace;color:var(--accent);margin-top:8px;white-space:pre-line;"></div>
+    </div>
+
+    <div class="card">
+      <h2>Trial History (for Table 3)</h2>
+      <div class="history-wrap">
+        <table class="history">
+          <thead>
+            <tr><th>#</th><th>m (g)</th><th>M (kg)</th><th>h line (cm)</th>
+                <th>Est. u</th><th>Exact u</th><th>Error %</th></tr>
+          </thead>
+          <tbody id="histBody"></tbody>
+        </table>
+      </div>
+      <button class="small-btn" id="csvBtn">â¬‡ Download CSV</button>
+      <button class="small-btn" id="clearBtn">Clear history</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------- Physics ----------------
+   Perfectly inelastic collision:  mÂ·u = (m+M)Â·v
+   Swing (energy conservation):    Â½(m+M)vÂ² = (m+M)gh  â†’  h = vÂ²/(2g)
+   True max rise of the block:     h = (mÂ·u/(m+M))Â² / (2g)
+   The swing is animated as Î¸(t) = Î¸maxÂ·sin(2Ï€t/T) with h = L(1âˆ’cosÎ¸max). */
+
+const G = 9.8;
+const L = 1.8;                       // m, pivot to block centre
+const T_SWING = 2 * Math.PI * Math.sqrt(L / G);
+const H_MAX_MEASURE = 1.2;           // m, top of the reference scale
+
+const cv = document.getElementById("scene");
+const cx = cv.getContext("2d");
+const PX = 180;                      // px per metre
+const PIVOT = { x: 250, y: 26 };
+
+let params = { mb: 0.015, Mb: 2.5, u: 150 };
+let state = "idle";                  // idle | bullet | swing
+let bulletX = 0;
+let swingT0 = null;
+let thetaMax = 0;
+let trial = null;                    // data of the fired trial
+let checkedOnce = false;
+let recorded = false;
+let history = [];
+let rafId = null;
+
+/* ---------------- Controls ---------------- */
+const fmt = (x, dp) => (x < 0 ? "âˆ’" : "") + Math.abs(x).toFixed(dp);
+
+function bindSlider(id, fn) {
+  const el = document.getElementById(id);
+  el.addEventListener("input", () => { fn(parseFloat(el.value)); if (state === "idle") draw(0); });
+  fn(parseFloat(el.value));
+}
+bindSlider("mb", v => { params.mb = v / 1000; document.getElementById("mbVal").textContent = v.toFixed(0) + " g"; });
+bindSlider("Mb", v => { params.Mb = v; document.getElementById("MbVal").textContent = v.toFixed(1) + " kg"; });
+bindSlider("u0", v => { params.u = v; });
+
+const refSlider = document.getElementById("refLine");
+refSlider.addEventListener("input", () => {
+  const h = parseFloat(refSlider.value);
+  document.getElementById("refVal").textContent = "h = " + h.toFixed(1) + " cm";
+  document.getElementById("rRef").textContent = h.toFixed(1) + " cm";
+  if (state === "idle") draw(0);
+});
+
+/* ---------------- Geometry ---------------- */
+function blockSide() { return (0.18 + 0.035 * params.Mb) * PX; }   // px
+function restBottomY() { return PIVOT.y + L * PX + blockSide() / 2; }
+function blockCentreAt(theta) {
+  return { x: PIVOT.x + L * PX * Math.sin(theta),
+           y: PIVOT.y + L * PX * Math.cos(theta) };
+}
+
+/* ---------------- Drawing ---------------- */
+function draw(theta, bulletXpos) {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  const side = blockSide();
+  const rb = restBottomY();
+
+  // frame / stand
+  cx.strokeStyle = "#475569"; cx.lineWidth = 6;
+  cx.beginPath(); cx.moveTo(PIVOT.x - 140, 14); cx.lineTo(PIVOT.x + 140, 14); cx.stroke();
+  cx.lineWidth = 2;
+  cx.fillStyle = "#475569";
+  cx.beginPath(); cx.arc(PIVOT.x, PIVOT.y, 6, 0, Math.PI * 2); cx.fill();
+
+  // reference scale (right side), 0 cm at rest bottom of block
+  const scaleX = 470;
+  cx.strokeStyle = "#64748b"; cx.fillStyle = "#475569";
+  cx.font = "10px Consolas, monospace";
+  cx.beginPath(); cx.moveTo(scaleX, rb); cx.lineTo(scaleX, rb - H_MAX_MEASURE * PX); cx.stroke();
+  for (let cm = 0; cm <= H_MAX_MEASURE * 100; cm += 10) {
+    const y = rb - cm / 100 * PX;
+    cx.beginPath(); cx.moveTo(scaleX, y); cx.lineTo(scaleX + (cm % 50 === 0 ? 12 : 7), y); cx.stroke();
+    if (cm % 20 === 0) cx.fillText(cm + " cm", scaleX + 15, y + 3);
+  }
+
+  // reference line (red, dashed, across the swing zone)
+  const hLine = parseFloat(refSlider.value) / 100;
+  const yLine = rb - hLine * PX;
+  cx.strokeStyle = "#ef4444"; cx.lineWidth = 1.6; cx.setLineDash([7, 5]);
+  cx.beginPath(); cx.moveTo(120, yLine); cx.lineTo(scaleX, yLine); cx.stroke();
+  cx.setLineDash([]);
+
+  // pendulum strings + block (kept level by twin strings)
+  const c = blockCentreAt(theta);
+  cx.strokeStyle = "#94a3b8"; cx.lineWidth = 2;
+  cx.beginPath(); cx.moveTo(PIVOT.x, PIVOT.y); cx.lineTo(c.x - side / 2 + 6, c.y - side / 2); cx.stroke();
+  cx.beginPath(); cx.moveTo(PIVOT.x, PIVOT.y); cx.lineTo(c.x + side / 2 - 6, c.y - side / 2); cx.stroke();
+
+  cx.fillStyle = "#b45309";
+  cx.fillRect(c.x - side / 2, c.y - side / 2, side, side);
+  cx.strokeStyle = "#78350f"; cx.lineWidth = 2;
+  cx.strokeRect(c.x - side / 2, c.y - side / 2, side, side);
+  cx.fillStyle = "#92400e";
+  for (let i = 1; i < 4; i++) {
+    cx.fillRect(c.x - side / 2 + 3, c.y - side / 2 + i * side / 4, side - 6, 2);
+  }
+  // embedded bullet mark
+  if (state === "swing") {
+    cx.fillStyle = "#1e293b";
+    cx.beginPath(); cx.arc(c.x - side / 2 + 6, c.y, 4, 0, Math.PI * 2); cx.fill();
+  }
+  cx.fillStyle = "#fff";
+  cx.font = "bold 12px Segoe UI";
+  cx.textAlign = "center";
+  cx.fillText(params.Mb.toFixed(1) + " kg", c.x, c.y + 4);
+  cx.textAlign = "left";
+
+  // gun (fires at the block's rest-centre height)
+  const gy = PIVOT.y + L * PX;
+  cx.fillStyle = "#334155";
+  cx.fillRect(6, gy - 8, 56, 16);
+  cx.fillRect(14, gy + 8, 14, 26);
+  cx.fillStyle = "#475569";
+  cx.fillRect(62, gy - 5, 10, 10);
+
+  // bullet in flight
+  if (state === "bullet" && bulletXpos !== undefined) {
+    cx.fillStyle = "#1e293b";
+    cx.beginPath(); cx.ellipse(bulletXpos, gy, 7, 3.5, 0, 0, Math.PI * 2); cx.fill();
+  }
+
+  // floor
+  cx.fillStyle = "#92400e";
+  cx.fillRect(0, 470, cv.width, 30);
+}
+
+/* ---------------- Animation ---------------- */
+let prevNow = null;
+
+function loop(now) {
+  const slow = document.getElementById("slowmo").checked ? 0.25 : 1;
+  if (prevNow === null) prevNow = now;
+  const dt = Math.min((now - prevNow) / 1000, 0.05) * slow;
+  prevNow = now;
+
+  if (state === "bullet") {
+    bulletX += 900 * dt;             // display speed (does NOT reveal u)
+    const side = blockSide();
+    if (bulletX >= PIVOT.x - side / 2) {
+      state = "swing";
+      swingT0 = null;
+      setStatus("ðŸ’¥ The bullet embedded in the block â€” it is swinging. Move the reference line to the highest point of the block's bottom edge.");
+    }
+    draw(0, bulletX);
+  } else if (state === "swing") {
+    if (swingT0 === null) swingT0 = 0;
+    swingT0 += dt;
+    const theta = thetaMax * Math.sin(2 * Math.PI * swingT0 / T_SWING);
+    draw(theta);
+  }
+  if (state !== "idle") rafId = requestAnimationFrame(loop);
+}
+
+function setStatus(s) { document.getElementById("status").textContent = s; }
+
+/* ---------------- Fire / Reset ---------------- */
+document.getElementById("fireBtn").addEventListener("click", () => {
+  if (state !== "idle") return;
+  const { mb, Mb, u } = params;
+  const v = mb * u / (mb + Mb);
+  const h = v * v / (2 * G);
+  if (h > L * (1 - Math.cos(Math.PI / 3))) {   // beyond 60Â° swing
+    setStatus("âš  With these settings the block would swing too high to measure. Reduce the bullet velocity or bullet mass, or increase the block mass.");
+    return;
+  }
+  trial = { mb, Mb, u, v, h, uExact: u };
+  thetaMax = Math.acos(1 - h / L);
+  state = "bullet";
+  bulletX = 72;
+  prevNow = null;
+  checkedOnce = false;
+  recorded = false;
+  showReport();
+  resetCalcPanel(false);
+  ["mb", "Mb", "u0"].forEach(id => document.getElementById(id).disabled = true);
+  document.getElementById("fireBtn").disabled = true;
+  setStatus("Firingâ€¦");
+  rafId = requestAnimationFrame(loop);
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = null;
+  state = "idle";
+  trial = null;
+  ["mb", "Mb", "u0"].forEach(id => document.getElementById(id).disabled = false);
+  document.getElementById("fireBtn").disabled = false;
+  clearReport();
+  resetCalcPanel(true);
+  setStatus("Set the masses and the (unknown) bullet velocity, set the reference line to the bottom of the block (h = 0), then press Fire.");
+  draw(0);
+});
+
+/* ---------------- Report ---------------- */
+function showReport() {
+  document.getElementById("rMb").textContent = (params.mb * 1000).toFixed(0) + " g  (" + params.mb.toFixed(3) + " kg)";
+  document.getElementById("rMB").textContent = params.Mb.toFixed(1) + " kg";
+  document.getElementById("rU").textContent = "???";
+}
+
+function clearReport() {
+  document.getElementById("rMb").textContent = "â€“";
+  document.getElementById("rMB").textContent = "â€“";
+  document.getElementById("rU").textContent = "???";
+}
+
+/* ---------------- Student calculation check ---------------- */
+function resetCalcPanel(disable) {
+  const inU = document.getElementById("inU");
+  inU.value = ""; inU.disabled = disable;
+  const fb = document.getElementById("fbU");
+  fb.textContent = ""; fb.className = "feedback";
+  document.getElementById("checkBtn").disabled = disable;
+  const showU = document.getElementById("showU");
+  showU.checked = false; showU.disabled = true;
+  document.getElementById("revealOut").textContent = "";
+  checkedOnce = false;
+}
+
+document.getElementById("checkBtn").addEventListener("click", () => {
+  if (!trial) return;
+  const fb = document.getElementById("fbU");
+  const val = parseFloat(document.getElementById("inU").value);
+  if (isNaN(val)) { fb.textContent = "enter a value"; fb.className = "feedback fb-bad"; return; }
+  const err = (val - trial.uExact) / trial.uExact;
+  if (Math.abs(err) <= 0.05) {
+    fb.textContent = "âœ” close enough"; fb.className = "feedback fb-ok";
+  } else {
+    fb.textContent = err > 0 ? "âœ– too high" : "âœ– too low";
+    fb.className = "feedback fb-bad";
+  }
+  checkedOnce = true;
+  document.getElementById("showU").disabled = false;
+});
+
+document.getElementById("showU").addEventListener("change", e => {
+  if (!trial || !checkedOnce) { e.target.checked = false; return; }
+  if (!e.target.checked) { return; }
+  const est = parseFloat(document.getElementById("inU").value);
+  const exact = trial.uExact;
+  const errPct = isNaN(est) ? null : Math.abs(est - exact) / exact * 100;
+  document.getElementById("rU").textContent = exact.toFixed(0) + " m/s";
+  document.getElementById("revealOut").textContent =
+    "Exact u = " + exact.toFixed(0) + " m/s" +
+    (errPct === null ? "" : "\nYour estimate = " + est + " m/s  (error " + errPct.toFixed(1) + " %)");
+  if (!recorded && !isNaN(est)) {
+    recorded = true;
+    addHistory({
+      mb: trial.mb * 1000, Mb: trial.Mb,
+      hLine: parseFloat(refSlider.value),
+      est, exact, errPct
+    });
+  }
+});
+
+/* ---------------- History ---------------- */
+function addHistory(r) {
+  history.push(r);
+  const tr = document.createElement("tr");
+  tr.innerHTML =
+    `<td>${history.length}</td><td>${r.mb.toFixed(0)}</td><td>${r.Mb.toFixed(1)}</td>` +
+    `<td>${r.hLine.toFixed(1)}</td><td>${r.est}</td><td>${r.exact.toFixed(0)}</td>` +
+    `<td>${r.errPct.toFixed(1)}</td>`;
+  document.getElementById("histBody").appendChild(tr);
+}
+
+document.getElementById("clearBtn").addEventListener("click", () => {
+  history = [];
+  document.getElementById("histBody").innerHTML = "";
+});
+
+document.getElementById("csvBtn").addEventListener("click", () => {
+  if (!history.length) return;
+  let csv = "Trial,Mass of bullet (g),Mass of wood block (kg),Max height measured (cm),Estimated u (m/s),Exact u (m/s),Error (%)\n";
+  history.forEach((r, i) => {
+    csv += [i+1, r.mb.toFixed(0), r.Mb.toFixed(1), r.hLine.toFixed(1),
+            r.est, r.exact.toFixed(0), r.errPct.toFixed(1)].join(",") + "\n";
+  });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  a.download = "ballistic_pendulum_data.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+draw(0);
+</script>
+</body>
+</html>
