@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Egg Drop â€” Momentum &amp; Impulsive Force | PHY3901 EXP 9</title>
+<title>Egg Drop — Momentum &amp; Impulsive Force | PHY3901 EXP 9</title>
 <style>
   :root {
     --bg: #0f172a;
@@ -205,12 +205,12 @@
 <body>
 
 <header>
-  <h1>ðŸ¥š Egg Drop Interactive â€” Momentum, Impulse &amp; Collisions</h1>
-  <p>PHY3901 Experiment 9 (Virtual Mode) Â· Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
+  <h1>🥚 Egg Drop Interactive — Momentum, Impulse &amp; Collisions</h1>
+  <p>PHY3901 Experiment 9 (Virtual Mode) · Department of Physics, Faculty of Science, Universiti Putra Malaysia</p>
 </header>
 <nav>
-  <a href="index.html" class="current">Experiment 1: Egg Drop</a> Â·
-  <a href="momentum.html">Experiment 2: Conservation of Momentum</a> Â·
+  <a href="index.html" class="current">Experiment 1: Egg Drop</a> ·
+  <a href="momentum.html">Experiment 2: Conservation of Momentum</a> ·
   <a href="pendulum.html">Experiment 3: Ballistic Pendulum</a>
 </nav>
 
@@ -240,21 +240,21 @@
     </div>
 
     <div class="actions">
-      <button class="big-btn" id="dropBtn">â–¼ Drop Egg</button>
+      <button class="big-btn" id="dropBtn">▼ Drop Egg</button>
       <button class="big-btn" id="resetBtn">Reset</button>
     </div>
 
     <div class="formula">
-      Impact velocity: <em>v = âˆš(2gh)</em><br>
-      Impulse: <em>J = mÎ”v</em><br>
-      Impulsive force: <em>F = mÎ”v â„ t</em><br>
-      (g = 9.8 m/sÂ² ; egg momentarily stops on landing, so Î”v = v)
+      Impact velocity: <em>v = √(2gh)</em><br>
+      Impulse: <em>J = mΔv</em><br>
+      Impulsive force: <em>F = mΔv ⁄ t</em><br>
+      (g = 9.8 m/s² ; egg momentarily stops on landing, so Δv = v)
     </div>
   </div>
 
   <!-- ===== Canvas ===== -->
   <div class="col-canvas card" style="padding:8px;">
-    <div class="live"><span id="liveH">h = â€“ m</span></div>
+    <div class="live"><span id="liveH">h = – m</span></div>
     <canvas id="scene" width="404" height="600"></canvas>
   </div>
 
@@ -263,14 +263,14 @@
     <div class="card" style="margin-bottom:14px;">
       <h2>Trial Report</h2>
       <table class="report">
-        <tr><td>Mass of egg, m</td>             <td id="rMass">â€“</td></tr>
-        <tr><td>Drop height, h</td>             <td id="rHeight">â€“</td></tr>
-        <tr><td>Time of impact, t <span style="color:var(--muted);">(sensor)</span></td> <td id="rTime">â€“</td></tr>
+        <tr><td>Mass of egg, m</td>             <td id="rMass">–</td></tr>
+        <tr><td>Drop height, h</td>             <td id="rHeight">–</td></tr>
+        <tr><td>Time of impact, t <span style="color:var(--muted);">(sensor)</span></td> <td id="rTime">–</td></tr>
       </table>
       <div class="condition cond-none" id="rCond">Run a trial to see the egg's final condition.</div>
       <p style="font-size:0.76rem;color:var(--muted);margin-top:10px;">
         The simulation only <b>measures</b> m, h and t. Use the equations of motion,
-        impulse and momentum to <b>calculate</b> the impact velocity, Î”v and the
+        impulse and momentum to <b>calculate</b> the impact velocity, Δv and the
         impulsive force, then verify your answers below.
       </p>
     </div>
@@ -278,7 +278,7 @@
     <div class="card" style="margin-bottom:14px;">
       <h2>Your Calculation</h2>
       <div class="calc-row">
-        <label for="inDv">Change in velocity, Î”v</label>
+        <label for="inDv">Change in velocity, Δv</label>
         <input type="number" step="any" id="inDv" placeholder="?" disabled> <span>m/s</span>
         <span class="feedback" id="fbDv"></span>
       </div>
@@ -305,7 +305,7 @@
           <tbody id="histBody"></tbody>
         </table>
       </div>
-      <button class="small-btn" id="csvBtn">â¬‡ Download CSV</button>
+      <button class="small-btn" id="csvBtn">⬇ Download CSV</button>
       <button class="small-btn" id="clearBtn">Clear history</button>
     </div>
   </div>
@@ -492,19 +492,19 @@ function showReport(r) {
   const cond = document.getElementById("rCond");
   if (r.condition === "intact") {
     cond.className = "condition cond-intact";
-    cond.textContent = "âœ… Egg is INTACT â€” safe landing!";
+    cond.textContent = "✅ Egg is INTACT — safe landing!";
   } else if (r.condition === "fractured") {
     cond.className = "condition cond-fracture";
-    cond.textContent = "âš ï¸ Egg is FRACTURED (cracked, but not broken)";
+    cond.textContent = "⚠️ Egg is FRACTURED (cracked, but not broken)";
   } else {
     cond.className = "condition cond-broken";
-    cond.textContent = "ðŸ’¥ Egg is BROKEN ENTIRELY!";
+    cond.textContent = "💥 Egg is BROKEN ENTIRELY!";
   }
 }
 
 function clearReport() {
   ["rMass","rHeight","rTime"].forEach(id =>
-    document.getElementById(id).textContent = "â€“");
+    document.getElementById(id).textContent = "–");
   const cond = document.getElementById("rCond");
   cond.className = "condition cond-none";
   cond.textContent = "Run a trial to see the egg's final condition.";
@@ -544,10 +544,10 @@ function checkValue(inputId, fbId, exact) {
   }
   const err = (val - exact) / exact;
   if (Math.abs(err) <= TOL) {
-    fb.textContent = "âœ” correct";
+    fb.textContent = "✔ correct";
     fb.className = "feedback fb-ok";
   } else {
-    fb.textContent = err > 0 ? "âœ– too high" : "âœ– too low";
+    fb.textContent = err > 0 ? "✖ too high" : "✖ too low";
     fb.className = "feedback fb-bad";
   }
 }
@@ -563,7 +563,7 @@ document.getElementById("checkBtn").addEventListener("click", () => {
 document.getElementById("revealBtn").addEventListener("click", () => {
   if (!lastTrial || !checkedOnce) return;
   document.getElementById("revealOut").textContent =
-    "Î”v = " + fmt(lastTrial.dv, 2) + " m/s   F = " + fmt(lastTrial.F, 1) + " N";
+    "Δv = " + fmt(lastTrial.dv, 2) + " m/s   F = " + fmt(lastTrial.F, 1) + " N";
 });
 
 function addHistory(r) {
@@ -631,7 +631,7 @@ document.getElementById("resetBtn").addEventListener("click", () => {
   if (running) return;
   clearReport();
   drawScene(sel.height, null);
-  document.getElementById("liveH").textContent = "h = â€“ m";
+  document.getElementById("liveH").textContent = "h = – m";
 });
 
 document.getElementById("clearBtn").addEventListener("click", () => {
